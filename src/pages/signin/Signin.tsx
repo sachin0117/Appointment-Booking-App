@@ -192,7 +192,7 @@ export default function Signup() {
                 },
               }}
             >
-              {loading ? <CircularProgress size={20} color="inherit" /> : "Sign In"}
+              {loading ? <CircularProgress size={28} sx={{color:"white"}} /> : "Sign In"}
             </Button>
           </Stack>
         </form>
