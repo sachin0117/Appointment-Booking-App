@@ -11,6 +11,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { useEffect, useState } from 'react';
 import Logo from "../../assets/QuickBookrs.png"
 import { useNavigate } from 'react-router-dom';
+import { getInitials } from '../../helpers/GetInitials';
 
 
 
@@ -18,6 +19,10 @@ export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [role, setRole] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const userData = localStorage.getItem("userData");
+  const fullname = userData ? JSON.parse(userData).fullname : "";
+  const initials = getInitials(fullname);
 
   useEffect(() => {
     const userData = localStorage.getItem('userData');
@@ -59,7 +64,7 @@ export default function Navbar() {
         <Box sx={{ flexGrow: 0, ml: 2 }}>
           <Tooltip title="Account settings">
             <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
-              <Avatar alt="User" src="" />
+              <Avatar alt="User" src="" sx={{padding:.5, bgcolor: "yellow", color:"black"}}>{initials}</Avatar>
             </IconButton>
           </Tooltip>
           <Menu
