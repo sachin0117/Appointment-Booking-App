@@ -5,16 +5,17 @@ import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { v4 as uuidv4 } from 'uuid';
 
-type BookAppointmentProps = {
+export type BookAppointmentProps = {
     id: string;
     serviceType: string;
     appointmentDate: string;
     timeSlotFrom: string;
     timeSlotTo: string;
     notes: string;
+    status: string;
 };
 
-type BookAppointmentFormFields = Omit<BookAppointmentProps, "id">;
+type BookAppointmentFormFields = Omit<BookAppointmentProps, "id">; // copy from exiting type without key property "id   "
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -38,6 +39,7 @@ const schema = Yup.object({
         .max(500, "Notes cannot exceed 500 characters")
         .optional()
         .default(""),
+    status: Yup.string().default("Pending")
 }).required();
 
 const defaultValues: BookAppointmentFormFields = {
@@ -46,6 +48,7 @@ const defaultValues: BookAppointmentFormFields = {
     timeSlotFrom: "",
     timeSlotTo: "",
     notes: "",
+    status: "Pending", 
 };
 
 const serviceOptions = [

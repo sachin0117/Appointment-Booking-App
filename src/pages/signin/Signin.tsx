@@ -1,9 +1,5 @@
 import {
   Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
   Stack,
@@ -14,7 +10,7 @@ import {
   Alert,
   Box,
 } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
@@ -27,13 +23,11 @@ const schema = Yup.object({
     .min(6, "Password must be at least 6 characters")
     .matches(/[A-Z]/, "Must contain at least one uppercase letter")
     .required("Password is required"),
-  role: Yup.string().oneOf(["user", "admin"], "Invalid role").required("Role is required"),
 });
 
 type FormType = {
   email: string;
   password: string;
-  role: "user" | "admin";
 };
 
 export default function Signup() {
@@ -45,13 +39,11 @@ export default function Signup() {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm<FormType>({
     defaultValues: {
       email: "",
       password: "",
-      role: undefined,
     },
     resolver: yupResolver(schema),
   });
@@ -67,8 +59,7 @@ export default function Signup() {
       const userData = JSON.parse(storedData);
       if (
         data.email === userData.email &&
-        data.password === userData.password &&
-        data.role === userData.role
+        data.password === userData.password 
       ) {
         setLoading(false);
         navigate("/dashboard");
@@ -155,28 +146,6 @@ export default function Signup() {
                 ),
               }}
             />
-            <FormControl fullWidth size="small" error={!!errors.role}>
-              <InputLabel id="role-label">Role</InputLabel>
-              <Controller
-                name="role"
-                control={control}
-                render={({ field }) => (
-                  <Select labelId="role-label" label="Role" {...field}>
-                    <MenuItem value="">
-                      <em>Select role</em>
-                    </MenuItem>
-                    <MenuItem value="user">User</MenuItem>
-                    <MenuItem value="admin">Admin</MenuItem>
-                  </Select>
-                )}
-              />
-              {errors.role && (
-                <Typography variant="caption" color="error">
-                  {errors.role.message}
-                </Typography>
-              )}
-            </FormControl>
-
             <Button
               type="submit"
               variant="contained"
