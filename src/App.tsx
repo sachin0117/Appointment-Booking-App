@@ -1,9 +1,11 @@
+import Routing from "./routing/Routing";
+import "./App.css"
 
 
 export default function App() {
   return (
     <>
-      <h1>Appointment Booking</h1>
+      <Routing />
     </>
   )
 }
