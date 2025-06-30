@@ -48,7 +48,7 @@ export default function Navbar() {
     <AppBar
       position="static"
       sx={{
-        background: "linear-gradient(to right,rgb(12, 124, 245), #00C6FF)",
+        background: "linear-gradient(to right,rgb(12, 122, 241), #00C6FF)",
         color: "#fff",
         boxShadow: 2,
       }}
@@ -58,13 +58,13 @@ export default function Navbar() {
           <img src={Logo} alt='logo' style={{ height: 50, marginRight: 12, borderRadius: "10px" }} />
           QuickBookrs
         </Typography>
-        <Button color="inherit" sx={{ mx: 1 }}>Home</Button>
+        <Button color="inherit" sx={{ mx: 1 }} onClick={()=> navigate('/dashboard')}>Home</Button>
         {role === 'admin' && <Button color="inherit" sx={{ mx: 1 }}>Manage Slots</Button>}
-        {role === 'user' && <Button color="inherit" sx={{ mx: 1 }}>Book Appointment</Button>}
+        {role === 'user' && <Button color="inherit" sx={{ mx: 1 }} onClick={()=> navigate('/dashboard/book-appointment')}>  Book Appointment</Button>}
         <Box sx={{ flexGrow: 0, ml: 2 }}>
           <Tooltip title="Account settings">
             <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
-              <Avatar alt="User" src="" sx={{padding:.5, bgcolor: "yellow", color:"black"}}>{initials}</Avatar>
+              <Avatar alt="User" src="" sx={{padding:.5, bgcolor: "white", color:"black"}}>{initials}</Avatar>
             </IconButton>
           </Tooltip>
           <Menu

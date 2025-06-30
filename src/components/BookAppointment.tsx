@@ -1,0 +1,221 @@
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Box, Button, FormControl, FormLabel, Grid, MenuItem, Paper, Select, Stack, TextField, Typography } from "@mui/material";
+import { Controller, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import { v4 as uuidv4 } from 'uuid';
+
+type BookAppointmentProps = {
+    id: string;
+    serviceType: string;
+    appointmentDate: string;
+    timeSlotFrom: string;
+    timeSlotTo: string;
+    notes: string;
+};
+
+type BookAppointmentFormFields = Omit<BookAppointmentProps, "id">;
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const todayStr = today.toISOString().split('T')[0];
+
+const schema = Yup.object({
+    serviceType: Yup.string().required("Service Type is required"),
+    appointmentDate: Yup.string()
+        .required("Appointment Date is required")
+        .test("not-in-past", "Appointment Date cannot be in the past", (value) => {
+            if (!value) return false;
+            return value >= todayStr;
+        }),
+    timeSlotFrom: Yup.string()
+        .required("Time Slot From is required")
+        .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/, "Invalid time format"),
+    timeSlotTo: Yup.string()
+        .required("Time Slot To is required")
+        .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/, "Invalid time format"),
+    notes: Yup.string()
+        .max(500, "Notes cannot exceed 500 characters")
+        .optional()
+        .default(""),
+}).required();
+
+const defaultValues: BookAppointmentFormFields = {
+    serviceType: "",
+    appointmentDate: todayStr,
+    timeSlotFrom: "",
+    timeSlotTo: "",
+    notes: "",
+};
+
+const serviceOptions = [
+    { value: "medical", label: "Medical Consultation" },
+    { value: "beauty", label: "Beauty & Spa" },
+    { value: "fitness", label: "Fitness Training" },
+    { value: "consulting", label: "Business Consulting" },
+    { value: "car", label: "Car Service" },
+    { value: "other", label: "Other Service" },
+];
+
+export default function BookAppointment() {
+    const navigate = useNavigate();
+    const {
+        register,
+        formState: { errors },
+        control,
+        handleSubmit,
+        reset,
+    } = useForm<BookAppointmentFormFields>({
+        defaultValues,
+        resolver: yupResolver(schema),
+    });
+
+    const onSubmit = (data: BookAppointmentFormFields) => {
+        const appointmentWithId: BookAppointmentProps = { ...data, id: uuidv4() };
+        const existing = localStorage.getItem('AppointmentData');
+        let appointments: BookAppointmentProps[] = [];
+        if (existing) {
+            const parsed = JSON.parse(existing);
+            appointments = Array.isArray(parsed) ? parsed : [parsed];
+        }
+        appointments.push(appointmentWithId);
+        localStorage.setItem('AppointmentData', JSON.stringify(appointments));
+        reset(defaultValues);
+        navigate("/dashboard");
+    };
+
+    return (
+        <Box
+            sx={{
+                minHeight: "90vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#f0f2f5",
+            }}
+        >
+            <Paper
+                elevation={3}
+                sx={{
+                    padding: 4,
+                    maxWidth: 600,
+                    width: "100%",
+                    borderRadius: 2
+                }}
+            >
+                <Typography
+                    variant="h4"
+                    sx={{
+                        textAlign: "center",
+                        mb: 3,
+                        fontWeight: 600,
+                        color: "#2d3748"
+                    }}
+                >
+                    Book Appointment
+                </Typography>
+
+                <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                    <Stack spacing={2}>
+                        <FormControl fullWidth error={!!errors.serviceType}>
+                            <FormLabel sx={{ mb: 1, fontWeight: 500 }}>Service Type</FormLabel>
+                            <Controller
+                                name="serviceType"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select {...field}>
+                                        <MenuItem value="" disabled>
+                                            Select Service Type
+                                        </MenuItem>
+                                        {serviceOptions.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                )}
+                            />
+                            {errors.serviceType && (
+                                <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                                    {errors.serviceType.message}
+                                </Typography>
+                            )}
+                        </FormControl>
+
+                        <Grid container columns={12} spacing={2}>
+                            <Grid sx={{ gridColumn: { xs: 'span 12', sm: 'span 6' } }}>
+                                <FormControl fullWidth>
+                                    <FormLabel sx={{ mb: 1, fontWeight: 500 }}>Appointment Date</FormLabel>
+                                    <TextField
+                                        type="date"
+                                        fullWidth
+                                        InputLabelProps={{ shrink: true }}
+                                        {...register("appointmentDate")}
+                                        error={!!errors.appointmentDate}
+                                        helperText={errors.appointmentDate?.message}
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid sx={{ gridColumn: { xs: 'span 6', sm: 'span 3' } }}>
+                                <FormControl fullWidth>
+                                    <FormLabel sx={{ mb: 1, fontWeight: 500 }}>From</FormLabel>
+                                    <TextField
+                                        type="time"
+                                        fullWidth
+                                        InputLabelProps={{ shrink: true }}
+                                        {...register("timeSlotFrom")}
+                                        error={!!errors.timeSlotFrom}
+                                        helperText={errors.timeSlotFrom?.message}
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid sx={{ gridColumn: { xs: 'span 6', sm: 'span 3' } }}>
+                                <FormControl fullWidth>
+                                    <FormLabel sx={{ mb: 1, fontWeight: 500 }}>To</FormLabel>
+                                    <TextField
+                                        type="time"
+                                        fullWidth
+                                        InputLabelProps={{ shrink: true }}
+                                        {...register("timeSlotTo")}
+                                        error={!!errors.timeSlotTo}
+                                        helperText={errors.timeSlotTo?.message}
+                                    />
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+
+                        <FormControl fullWidth>
+                            <FormLabel sx={{ mb: 1, fontWeight: 500 }}>Additional Notes</FormLabel>
+                            <TextField
+                                multiline
+                                rows={3}
+                                fullWidth
+                                placeholder="Any special requests or notes..."
+                                {...register("notes")}
+                                error={!!errors.notes}
+                                helperText={errors.notes?.message}
+                            />
+                        </FormControl>
+
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            type="submit"
+                            fullWidth
+                            sx={{
+                                mt: 2,
+                                py: 1.5,
+                                fontWeight: 600,
+                                backgroundColor: "#4e73df",
+                                "&:hover": { backgroundColor: "#2d59c9" }
+                            }}
+                        >
+                            Confirm Appointment
+                        </Button>
+                    </Stack>
+                </form>
+            </Paper>
+        </Box>
+    );
+}
