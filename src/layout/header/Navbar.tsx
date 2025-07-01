@@ -59,7 +59,7 @@ export default function Navbar() {
           QuickBookrs
         </Typography>
         <Button color="inherit" sx={{ mx: 1 }} onClick={()=> navigate('/dashboard')}>Home</Button>
-        {role === 'admin' && <Button color="inherit" sx={{ mx: 1 }}>Manage Slots</Button>}
+        {role === 'admin' && <Button color="inherit" sx={{ mx: 1 }} onClick={()=> navigate('/dashboard/manage-services')}>Manage Services</Button>}
         {role === 'user' && <Button color="inherit" sx={{ mx: 1 }} onClick={()=> navigate('/dashboard/book-appointment')}>  Book Appointment</Button>}
         <Box sx={{ flexGrow: 0, ml: 2 }}>
           <Tooltip title="Account settings">

@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Divider, Grid, Typography } from "@mui/material";
 import PendingIcon from '@mui/icons-material/Pending';
-import { BookAppointmentProps } from "../BookAppointment";
+import { BookAppointmentProps } from "./BookAppointment";
 
 export default function AppointmentAnalytics({ appointments }: { appointments: BookAppointmentProps[] }) {
     return (

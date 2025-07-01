@@ -19,7 +19,11 @@ type BookAppointmentFormFields = Omit<BookAppointmentProps, "id">; // copy from 
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
-const todayStr = today.toISOString().split('T')[0];
+const todayStr = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0')
+].join('-');
 
 const schema = Yup.object({
     serviceType: Yup.string().required("Service Type is required"),
@@ -48,17 +52,18 @@ const defaultValues: BookAppointmentFormFields = {
     timeSlotFrom: "",
     timeSlotTo: "",
     notes: "",
-    status: "Pending", 
+    status: "Pending",
 };
 
-const serviceOptions = [
-    { value: "medical", label: "Medical Consultation" },
-    { value: "beauty", label: "Beauty & Spa" },
-    { value: "fitness", label: "Fitness Training" },
-    { value: "consulting", label: "Business Consulting" },
-    { value: "car", label: "Car Service" },
-    { value: "other", label: "Other Service" },
-];
+const Service = (() => {
+    const raw = localStorage.getItem("services");
+    try {
+        const arr = JSON.parse(raw || "[]");
+        return Array.isArray(arr) ? arr : [];
+    } catch {
+        return [];
+    }
+})();
 
 export default function BookAppointment() {
     const navigate = useNavigate();
@@ -130,9 +135,9 @@ export default function BookAppointment() {
                                         <MenuItem value="" disabled>
                                             Select Service Type
                                         </MenuItem>
-                                        {serviceOptions.map((option) => (
-                                            <MenuItem key={option.value} value={option.value}>
-                                                {option.label}
+                                        {Service.map((option: any) => (
+                                            <MenuItem key={option.id} value={option.addService}>
+                                                {option.addService}
                                             </MenuItem>
                                         ))}
                                     </Select>

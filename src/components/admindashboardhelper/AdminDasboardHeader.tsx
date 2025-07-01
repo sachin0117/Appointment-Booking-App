@@ -1,9 +1,7 @@
 import { Avatar, Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { getInitials } from "../../helpers/GetInitials";
-import { BookAppointmentProps } from "./BookAppointment";
 
-
-export default function UserDasboardHeader({ appointments }: { appointments: BookAppointmentProps[] }) {
+export default function AdminDasboardHeader() {
     const userData = localStorage.getItem("userData");
     const fullName = userData ? JSON.parse(userData)?.fullname : "User";
     return (
@@ -20,7 +18,7 @@ export default function UserDasboardHeader({ appointments }: { appointments: Boo
                             width: 80,
                             height: 80,
                             bgcolor: 'white',
-                            color:"black",
+                            color: "black",
                             fontSize: '2.5rem'
                         }}>
                             {getInitials(fullName)}
@@ -41,11 +39,8 @@ export default function UserDasboardHeader({ appointments }: { appointments: Boo
                             borderRadius: 2,
                             textAlign: 'center'
                         }}>
-                            <Typography variant="h5" gutterBottom>
-                                {appointments.filter(a => a.status === 'Confirmed').length}
-                            </Typography>
                             <Typography variant="body2">
-                                Upcoming Appointments
+                                Upcoming Scheduled Appointments
                             </Typography>
                         </Box>
                     </Grid>
