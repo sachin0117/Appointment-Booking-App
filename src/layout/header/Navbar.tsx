@@ -20,12 +20,12 @@ export default function Navbar() {
   const [role, setRole] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const userData = localStorage.getItem("userData");
+  const userData = localStorage.getItem("currentUser");
   const fullname = userData ? JSON.parse(userData).fullname : "";
   const initials = getInitials(fullname);
 
   useEffect(() => {
-    const userData = localStorage.getItem('userData');
+    const userData = localStorage.getItem('currentUser');
     if (userData) {
       const parsed = JSON.parse(userData);
       setRole(parsed.role);
@@ -60,7 +60,7 @@ export default function Navbar() {
         </Typography>
         <Button color="inherit" sx={{ mx: 1 }} onClick={()=> navigate('/dashboard')}>Home</Button>
         {role === 'admin' && <Button color="inherit" sx={{ mx: 1 }} onClick={()=> navigate('/dashboard/manage-services')}>Manage Services</Button>}
-        {role === 'user' && <Button color="inherit" sx={{ mx: 1 }} onClick={()=> navigate('/dashboard/book-appointment')}>  Book Appointment</Button>}
+        {role === 'user' && <Button color="inherit" sx={{ mx: 1 }} onClick={()=> navigate('/dashboard/book-appointment')}>Book Appointment</Button>}
         <Box sx={{ flexGrow: 0, ml: 2 }}>
           <Tooltip title="Account settings">
             <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>

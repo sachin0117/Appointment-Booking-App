@@ -2,7 +2,7 @@ import { Avatar, Box, Card, CardContent, Grid, Typography } from "@mui/material"
 import { getInitials } from "../../helpers/GetInitials";
 
 export default function AdminDasboardHeader() {
-    const userData = localStorage.getItem("userData");
+    const userData = localStorage.getItem("currentUser");
     const fullName = userData ? JSON.parse(userData)?.fullname : "User";
     return (
         <Card elevation={2} sx={{

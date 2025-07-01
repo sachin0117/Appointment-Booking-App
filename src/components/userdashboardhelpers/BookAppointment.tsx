@@ -79,7 +79,11 @@ export default function BookAppointment() {
     });
 
     const onSubmit = (data: BookAppointmentFormFields) => {
-        const appointmentWithId: BookAppointmentProps = { ...data, id: uuidv4() };
+        const CurrentUser = JSON.parse(localStorage.getItem("currentUser") || "{}")
+        const appointmentWithId: BookAppointmentProps & { fullname?: string; email?: string } = {
+            ...data, id: uuidv4(), fullname: CurrentUser.fullname,
+            email: CurrentUser.email,
+        };
         const existing = localStorage.getItem('AppointmentData');
         let appointments: BookAppointmentProps[] = [];
         if (existing) {

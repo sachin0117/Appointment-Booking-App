@@ -11,10 +11,15 @@ export default function UserDashboard() {
 
     useEffect(() => {
         const appointmentData = localStorage.getItem("AppointmentData");
-        if (appointmentData) {
+        const currentUser = localStorage.getItem("currentUser")
+        if (appointmentData && currentUser) {
             try {
                 const parsed = JSON.parse(appointmentData);
-                setAppointments(Array.isArray(parsed) ? parsed : [parsed]);
+                const user = JSON.parse(currentUser);
+                const filtered = (Array.isArray(parsed) ? parsed : [parsed]).filter(
+                    (appointment: any) => appointment.email === user.email
+                );
+                setAppointments(filtered);
             } catch (error) {
                 console.error("Failed to parse AppointmentData", error);
             }

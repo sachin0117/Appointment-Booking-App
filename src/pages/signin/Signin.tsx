@@ -54,13 +54,20 @@ export default function Signup() {
       const storedData = localStorage.getItem("userData");
       if (!storedData) {
         setLoading(false);
+        setError("No users found. Please sign up first.");
         return;
       }
       const userData = JSON.parse(storedData);
-      if (
-        data.email === userData.email &&
-        data.password === userData.password 
-      ) {
+      if (!Array.isArray(userData)) {
+        setLoading(false);
+        setError("User data is corrupted. Please sign up again.");
+        return;
+      }
+      const foundUser = userData.find(
+        (user: any) => user.email === data.email && user.password === data.password
+      );
+      if (foundUser) {
+        localStorage.setItem("currentUser", JSON.stringify(foundUser));
         setLoading(false);
         navigate("/dashboard");
       } else {
@@ -73,11 +80,11 @@ export default function Signup() {
   return (
     <Box
       sx={{
-        marginTop:"230px",
+        marginTop: "230px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        overflowY: "hidden", 
+        overflowY: "hidden",
       }}
     >
       <Paper
@@ -161,7 +168,7 @@ export default function Signup() {
                 },
               }}
             >
-              {loading ? <CircularProgress size={28} sx={{color:"white"}} /> : "Sign In"}
+              {loading ? <CircularProgress size={28} sx={{ color: "white" }} /> : "Sign In"}
             </Button>
           </Stack>
         </form>

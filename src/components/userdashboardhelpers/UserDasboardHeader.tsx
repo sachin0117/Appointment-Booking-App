@@ -4,7 +4,7 @@ import { BookAppointmentProps } from "./BookAppointment";
 
 
 export default function UserDasboardHeader({ appointments }: { appointments: BookAppointmentProps[] }) {
-    const userData = localStorage.getItem("userData");
+    const userData = localStorage.getItem("currentUser");
     const fullName = userData ? JSON.parse(userData)?.fullname : "User";
     return (
         <Card elevation={2} sx={{

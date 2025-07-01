@@ -59,17 +59,22 @@ export default function Signup() {
         resolver: yupResolver(schema),
     });
 
-    const onSubmit = (data: FormType) => {
-        setLoading(true);
+   const onSubmit = (data: FormType) => {
+    setLoading(true);
+    setTimeout(() => {
+        let existingUsers = JSON.parse(localStorage.getItem("userData") || "[]");
+        if (!Array.isArray(existingUsers)) {
+            existingUsers = [existingUsers];
+        }
+        existingUsers.push(data);
+        localStorage.setItem("userData", JSON.stringify(existingUsers));
+        setLoading(false);
         setTimeout(() => {
-            localStorage.setItem("userData", JSON.stringify(data));
-            setLoading(false);
-            setTimeout(() => {
-                navigate("/signin");
-                reset();
-            }, 1500);
-        }, 2000);
-    };
+            navigate("/signin");
+            reset();
+        }, 1500);
+    }, 2000);
+};
 
     return (
         <>
