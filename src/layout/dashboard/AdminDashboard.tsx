@@ -1,15 +1,17 @@
-import { Box, Card, CardContent, Grid, Typography, Divider, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, } from "@mui/material";
-import { Event as EventIcon, AccessTime as AccessTimeIcon, Cancel as CancelIcon } from '@mui/icons-material'
+import { Box, Card, CardContent, Grid, Typography, Divider, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Button, Stack, } from "@mui/material";
+import { Event as EventIcon, AccessTime as AccessTimeIcon, } from '@mui/icons-material'
 import AdminDasboardHeader from "../../components/admindashboardhelper/AdminDasboardHeader";
 import { formatTime, formatDate } from "../../helpers/Date&Time";
 import { useEffect, useState } from "react";
+import AdminAppointmentAnalytics from "../../components/admindashboardhelper/AdminAppointmentAnalytics";
 
 
 export default function AdminDashboard() {
   const [appointments, setAppointments] = useState<any[]>([]);
   useEffect(() => {
     const appointmentData = localStorage.getItem("AppointmentData");
-    if (appointmentData) {
+    const currentUser = localStorage.getItem("currentUser")
+    if (appointmentData && currentUser) {
       try {
         const parsed = JSON.parse(appointmentData);
         setAppointments(Array.isArray(parsed) ? parsed : [parsed]);
@@ -18,6 +20,18 @@ export default function AdminDashboard() {
       }
     }
   }, []);
+  const handleStatusUpdate = (id: string, newStatus: string) => {
+    const updated = appointments.map(app => {
+      if (app.id === id) {
+        return { ...app, status: newStatus };
+      }
+      return app;
+    });
+
+    setAppointments(updated);
+    localStorage.setItem("AppointmentData", JSON.stringify(updated));
+  };
+
 
   return (
     <Box p={2}>
@@ -33,7 +47,7 @@ export default function AdminDashboard() {
                 mb: 2
               }}>
                 <EventIcon sx={{ mr: 1, color: "black" }} />
-                Upcoming Appointments
+                Upcoming Appointments Details
               </Typography >
               <Divider sx={{ mb: 3 }} />
               <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 2 }}>
@@ -95,13 +109,47 @@ export default function AdminDashboard() {
                             {appointment.notes}
                           </TableCell>
                           <TableCell align="center">
-                            {/* <StatusChip status={appointment.status || "pending"} /> */}
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                textTransform: "capitalize",
+                                color:
+                                  appointment.status === "confirmed"
+                                    ? "green"
+                                    : appointment.status === "cancelled"
+                                      ? "red"
+                                      : "orange",
+                                fontWeight: "bolder",
+                              }}
+                            >
+                              {appointment.status || "pending"}
+                            </Typography>
                           </TableCell>
                           <TableCell align="center">
-                            <IconButton>
-                              <CancelIcon sx={{ color: "red" }} />
-                            </IconButton>
+                            {appointment.status !== "cancelled" && (
+                              <Stack direction="row" spacing={1} justifyContent="center">
+                                {appointment.status !== "confirmed" && (
+                                  <Button
+                                    variant="outlined"
+                                    size="small"
+                                    color="success"
+                                    onClick={() => handleStatusUpdate(appointment.id, "confirmed")}
+                                  >
+                                    Confirm
+                                  </Button>
+                                )}
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  color="error"
+                                  onClick={() => handleStatusUpdate(appointment.id, "cancelled")}
+                                >
+                                  Cancel
+                                </Button>
+                              </Stack>
+                            )}
                           </TableCell>
+
                         </TableRow>
                       ))
                     ) : (
@@ -130,6 +178,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </Grid>
+        <AdminAppointmentAnalytics />
       </Grid>
     </Box>
 

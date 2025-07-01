@@ -1,7 +1,7 @@
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Box, Card, CardContent, Grid, Divider, Chip, IconButton } from "@mui/material";
 import { Cancel as CancelIcon, Delete as DeleteIcon, Pending as PendingIcon, Check as CheckIcon, AccessTime as AccessTimeIcon, Event as EventIcon } from '@mui/icons-material';
 import { formatDate, formatTime } from "../../helpers/Date&Time"
-import AppointmentAnalytics from "../../components/userdashboardhelpers/AppointmentAnalytics";
+import AppointmentAnalytics from "../../components/userdashboardhelpers/UserAppointmentAnalytics";
 import UserInfo from "../../components/userdashboardhelpers/UserInfo";
 import UserDasboardHeader from "../../components/userdashboardhelpers/UserDasboardHeader";
 import React, { useEffect } from "react";
@@ -27,7 +27,7 @@ export default function UserDashboard() {
     }, []);
 
     const StatusChip = ({ status }: { status: string }) => {
-        switch (status) {
+        switch (status.toLowerCase()) {
             case "confirmed":
                 return (
                     <Chip
@@ -71,7 +71,7 @@ export default function UserDashboard() {
 
     return (
         <Box p={2}>
-            <UserDasboardHeader appointments={appointments} />
+            <UserDasboardHeader  />
             <Grid container spacing={3}>
                 <Grid>
                     <Card elevation={1} sx={{ borderRadius: 2 }}>
@@ -143,8 +143,8 @@ export default function UserDashboard() {
                                                         <StatusChip status={appointment.status || "pending"} />
                                                     </TableCell>
                                                     <TableCell align="center">
-                                                        <IconButton>
-                                                            <DeleteIcon sx={{ color: "red" }} onClick={() => handleDelete(appointment.id)} />
+                                                        <IconButton onClick={() => handleDelete(appointment.id)}>
+                                                            <DeleteIcon sx={{ color: "red" }}  />
                                                         </IconButton>
                                                     </TableCell>
                                                 </TableRow>
@@ -192,7 +192,7 @@ export default function UserDashboard() {
                     </Card>
                 </Grid>
                 <UserInfo />
-                <AppointmentAnalytics appointments={appointments} />
+                <AppointmentAnalytics />
             </Grid>
         </Box>
     );

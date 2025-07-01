@@ -2,7 +2,12 @@ import { Box, Card, CardContent, Divider, Grid, Typography } from "@mui/material
 import PendingIcon from '@mui/icons-material/Pending';
 import { BookAppointmentProps } from "./BookAppointment";
 
-export default function AppointmentAnalytics({ appointments }: { appointments: BookAppointmentProps[] }) {
+
+export default function AppointmentAnalytics() {
+    const appointments = JSON.parse(localStorage.getItem("AppointmentData") || "[]");
+    const confirmedCount = appointments.filter((a: BookAppointmentProps) => (a.status || "").toLowerCase() === "confirmed").length;
+    const PendingCount = appointments.filter((a: BookAppointmentProps) => (a.status || "").toLowerCase() === "pending").length;
+    const CancelledCount = appointments.filter((a: BookAppointmentProps) => (a.status || "").toLowerCase() === "cancelled").length;
     return (
         <Grid >
             <Card elevation={1} sx={{ borderRadius: 2 }}>
@@ -27,7 +32,7 @@ export default function AppointmentAnalytics({ appointments }: { appointments: B
                                 textAlign: 'center'
                             }}>
                                 <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                                    {appointments.filter(a => a.status === 'Confirmed').length}
+                                    {confirmedCount}
                                 </Typography>
                                 <Typography variant="body2">Confirmed</Typography>
                             </Box>
@@ -41,7 +46,7 @@ export default function AppointmentAnalytics({ appointments }: { appointments: B
                                 textAlign: 'center'
                             }}>
                                 <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                                    {appointments.filter(a => a.status === 'Pending').length}
+                                    {PendingCount}
                                 </Typography>
                                 <Typography variant="body2">Pending</Typography>
                             </Box>
@@ -55,7 +60,7 @@ export default function AppointmentAnalytics({ appointments }: { appointments: B
                                 textAlign: 'center'
                             }}>
                                 <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                                    {appointments.filter(a => a.status === 'Cancelled').length}
+                                    {CancelledCount}
                                 </Typography>
                                 <Typography variant="body2">Cancelled</Typography>
                             </Box>

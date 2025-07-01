@@ -2,7 +2,7 @@ import { Box, Card, CardContent, Divider, Grid, Typography } from "@mui/material
 import { PersonPinCircleOutlined } from "@mui/icons-material";
 
 export default function UserInfo() {
-    const userData = localStorage.getItem("userData");
+    const userData = localStorage.getItem("currentUser");
     const fullName = userData ? JSON.parse(userData)?.fullname : "User";
     const email = userData ? JSON.parse(userData)?.email : "User";
     return (
@@ -28,7 +28,7 @@ export default function UserInfo() {
                             <strong>Email:</strong> {email}
                         </Typography>
                         <Typography variant="body1">
-                            <strong>Member Since:</strong> January 2024
+                            <strong>Member Since:</strong> January 2025
                         </Typography>
                     </Box>
                 </CardContent>

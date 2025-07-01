@@ -3,9 +3,11 @@ import { getInitials } from "../../helpers/GetInitials";
 import { BookAppointmentProps } from "./BookAppointment";
 
 
-export default function UserDasboardHeader({ appointments }: { appointments: BookAppointmentProps[] }) {
+export default function UserDasboardHeader() {
     const userData = localStorage.getItem("currentUser");
     const fullName = userData ? JSON.parse(userData)?.fullname : "User";
+    const appointments = JSON.parse(localStorage.getItem("AppointmentData") || "[]");
+    const confirmedCount = appointments.filter((a:BookAppointmentProps) => (a.status || "").toLowerCase() === "confirmed").length;
     return (
         <Card elevation={2} sx={{
             mb: 4,
@@ -20,7 +22,7 @@ export default function UserDasboardHeader({ appointments }: { appointments: Boo
                             width: 80,
                             height: 80,
                             bgcolor: 'white',
-                            color:"black",
+                            color: "black",
                             fontSize: '2.5rem'
                         }}>
                             {getInitials(fullName)}
@@ -28,7 +30,7 @@ export default function UserDasboardHeader({ appointments }: { appointments: Boo
                     </Grid>
                     <Grid  >
                         <Typography variant="h4" component="h1" gutterBottom>
-                            Welcome back, {fullName}!
+                            Welcome {fullName}!
                         </Typography>
                         <Typography variant="body1" sx={{ opacity: 0.9 }}>
                             Here's your upcoming appointments and schedule
@@ -42,7 +44,7 @@ export default function UserDasboardHeader({ appointments }: { appointments: Boo
                             textAlign: 'center'
                         }}>
                             <Typography variant="h5" gutterBottom>
-                                {appointments.filter(a => a.status === 'Confirmed').length}
+                                {confirmedCount}
                             </Typography>
                             <Typography variant="body2">
                                 Upcoming Appointments

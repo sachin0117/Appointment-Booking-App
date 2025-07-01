@@ -4,6 +4,8 @@ import { getInitials } from "../../helpers/GetInitials";
 export default function AdminDasboardHeader() {
     const userData = localStorage.getItem("currentUser");
     const fullName = userData ? JSON.parse(userData)?.fullname : "User";
+    const appointments = JSON.parse(localStorage.getItem("AppointmentData") || "[]");
+    const confirmedCount = appointments.filter((a: any) => (a.status || "").toLowerCase() === "confirmed").length;
     return (
         <Card elevation={2} sx={{
             mb: 4,
@@ -26,7 +28,7 @@ export default function AdminDasboardHeader() {
                     </Grid>
                     <Grid  >
                         <Typography variant="h4" component="h1" gutterBottom>
-                            Welcome back, {fullName}!
+                            Welcome {fullName}!
                         </Typography>
                         <Typography variant="body1" sx={{ opacity: 0.9 }}>
                             Here's your upcoming appointments and schedule
@@ -39,6 +41,9 @@ export default function AdminDasboardHeader() {
                             borderRadius: 2,
                             textAlign: 'center'
                         }}>
+                            <Typography variant="h5" gutterBottom>
+                                {confirmedCount}
+                            </Typography>
                             <Typography variant="body2">
                                 Upcoming Scheduled Appointments
                             </Typography>
