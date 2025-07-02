@@ -26,7 +26,7 @@ export default function AdminDashboard() {
         return { ...app, status: newStatus };
       }
       return app;
-    });
+    }); 
 
     setAppointments(updated);
     localStorage.setItem("AppointmentData", JSON.stringify(updated));

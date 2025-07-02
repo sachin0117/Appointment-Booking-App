@@ -1,0 +1,50 @@
+:root {
+  --whiteText: #fff;
+  --primaryFont: "Montserrat", sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.fullSize {
+  width: 100vw;
+  height: 100vh;
+}
+
+#ERR404 {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.MuiTypography-h4 {
+  font-family: var(--primaryFont) !important;
+}
+
+.MuiTypography-h5 {
+  font-family: var(--primaryFont) !important;
+}
+
+#beforeTooLate {
+  margin-top: 50px;
+  font-family: var(--primaryFont) !important;
+}
+
+#beforeTooLate .textLink {
+  font-weight: bold;
+  color: red;
+  text-decoration: none;
+  padding: 0px;
+  text-transform: lowercase;
+}
+
+#monsterImg {
+  position: fixed;
+  bottom: 0;
+  height: 300px;
+  right: 0;
+}

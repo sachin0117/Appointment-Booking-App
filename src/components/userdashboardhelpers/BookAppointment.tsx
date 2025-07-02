@@ -1,9 +1,10 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Box, Button, FormControl, FormLabel, Grid, MenuItem, Paper, Select, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, FormControl, FormLabel, Grid, MenuItem, Paper, Select, Snackbar, Stack, TextField, Typography } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { v4 as uuidv4 } from 'uuid';
+import { useState } from "react";
 
 export type BookAppointmentProps = {
     id: string;
@@ -66,6 +67,7 @@ const Service = (() => {
 })();
 
 export default function BookAppointment() {
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" as "success" | "error" });
     const navigate = useNavigate();
     const {
         register,
@@ -92,142 +94,163 @@ export default function BookAppointment() {
         }
         appointments.push(appointmentWithId);
         localStorage.setItem('AppointmentData', JSON.stringify(appointments));
+        setSnackbar({ open: true, message: "Appoinment booked successfully!", severity: "success" });
         reset(defaultValues);
-        navigate("/dashboard");
+        setTimeout(() => {
+            navigate("/dashboard");
+        }, 1000);
+
     };
 
     return (
-        <Box
-            sx={{
-                minHeight: "90vh",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#f0f2f5",
-            }}
-        >
-            <Paper
-                elevation={3}
+        <>
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={3000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert
+                    onClose={() => setSnackbar({ ...snackbar, open: false })}
+                    severity={snackbar.severity}
+                    sx={{ width: "100%" }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+            <Box
                 sx={{
-                    padding: 4,
-                    maxWidth: 600,
-                    width: "100%",
-                    borderRadius: 2
+                    minHeight: "90vh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#f0f2f5",
                 }}
             >
-                <Typography
-                    variant="h4"
+                <Paper
+                    elevation={3}
                     sx={{
-                        textAlign: "center",
-                        mb: 3,
-                        fontWeight: 600,
-                        color: "#2d3748"
+                        padding: 4,
+                        maxWidth: 600,
+                        width: "100%",
+                        borderRadius: 2
                     }}
                 >
-                    Book Appointment
-                </Typography>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            textAlign: "center",
+                            mb: 3,
+                            fontWeight: 600,
+                            color: "#2d3748"
+                        }}
+                    >
+                        Book Appointment
+                    </Typography>
 
-                <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                    <Stack spacing={2}>
-                        <FormControl fullWidth error={!!errors.serviceType}>
-                            <FormLabel sx={{ mb: 1, fontWeight: 500 }}>Service Type</FormLabel>
-                            <Controller
-                                name="serviceType"
-                                control={control}
-                                render={({ field }) => (
-                                    <Select {...field}>
-                                        <MenuItem value="" disabled>
-                                            Select Service Type
-                                        </MenuItem>
-                                        {Service.map((option: any) => (
-                                            <MenuItem key={option.id} value={option.addService}>
-                                                {option.addService}
+                    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                        <Stack spacing={2}>
+                            <FormControl fullWidth error={!!errors.serviceType}>
+                                <FormLabel sx={{ mb: 1, fontWeight: 500 }}>Service Type</FormLabel>
+                                <Controller
+                                    name="serviceType"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select {...field}>
+                                            <MenuItem value="" disabled>
+                                                Select Service Type
                                             </MenuItem>
-                                        ))}
-                                    </Select>
+                                            {Service.map((option: any) => (
+                                                <MenuItem key={option.id} value={option.addService}>
+                                                    {option.addService}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    )}
+                                />
+                                {errors.serviceType && (
+                                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                                        {errors.serviceType.message}
+                                    </Typography>
                                 )}
-                            />
-                            {errors.serviceType && (
-                                <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                                    {errors.serviceType.message}
-                                </Typography>
-                            )}
-                        </FormControl>
+                            </FormControl>
 
-                        <Grid container columns={12} spacing={2}>
-                            <Grid sx={{ gridColumn: { xs: 'span 12', sm: 'span 6' } }}>
-                                <FormControl fullWidth>
-                                    <FormLabel sx={{ mb: 1, fontWeight: 500 }}>Appointment Date</FormLabel>
-                                    <TextField
-                                        type="date"
-                                        fullWidth
-                                        InputLabelProps={{ shrink: true }}
-                                        {...register("appointmentDate")}
-                                        error={!!errors.appointmentDate}
-                                        helperText={errors.appointmentDate?.message}
-                                    />
-                                </FormControl>
+                            <Grid container columns={12} spacing={2}>
+                                <Grid sx={{ gridColumn: { xs: 'span 12', sm: 'span 6' } }}>
+                                    <FormControl fullWidth>
+                                        <FormLabel sx={{ mb: 1, fontWeight: 500 }}>Appointment Date</FormLabel>
+                                        <TextField
+                                            type="date"
+                                            fullWidth
+                                            InputLabelProps={{ shrink: true }}
+                                            {...register("appointmentDate")}
+                                            error={!!errors.appointmentDate}
+                                            helperText={errors.appointmentDate?.message}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid sx={{ gridColumn: { xs: 'span 6', sm: 'span 3' } }}>
+                                    <FormControl fullWidth>
+                                        <FormLabel sx={{ mb: 1, fontWeight: 500 }}>From</FormLabel>
+                                        <TextField
+                                            type="time"
+                                            fullWidth
+                                            InputLabelProps={{ shrink: true }}
+                                            {...register("timeSlotFrom")}
+                                            error={!!errors.timeSlotFrom}
+                                            helperText={errors.timeSlotFrom?.message}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid sx={{ gridColumn: { xs: 'span 6', sm: 'span 3' } }}>
+                                    <FormControl fullWidth>
+                                        <FormLabel sx={{ mb: 1, fontWeight: 500 }}>To</FormLabel>
+                                        <TextField
+                                            type="time"
+                                            fullWidth
+                                            InputLabelProps={{ shrink: true }}
+                                            {...register("timeSlotTo")}
+                                            error={!!errors.timeSlotTo}
+                                            helperText={errors.timeSlotTo?.message}
+                                        />
+                                    </FormControl>
+                                </Grid>
                             </Grid>
-                            <Grid sx={{ gridColumn: { xs: 'span 6', sm: 'span 3' } }}>
-                                <FormControl fullWidth>
-                                    <FormLabel sx={{ mb: 1, fontWeight: 500 }}>From</FormLabel>
-                                    <TextField
-                                        type="time"
-                                        fullWidth
-                                        InputLabelProps={{ shrink: true }}
-                                        {...register("timeSlotFrom")}
-                                        error={!!errors.timeSlotFrom}
-                                        helperText={errors.timeSlotFrom?.message}
-                                    />
-                                </FormControl>
-                            </Grid>
-                            <Grid sx={{ gridColumn: { xs: 'span 6', sm: 'span 3' } }}>
-                                <FormControl fullWidth>
-                                    <FormLabel sx={{ mb: 1, fontWeight: 500 }}>To</FormLabel>
-                                    <TextField
-                                        type="time"
-                                        fullWidth
-                                        InputLabelProps={{ shrink: true }}
-                                        {...register("timeSlotTo")}
-                                        error={!!errors.timeSlotTo}
-                                        helperText={errors.timeSlotTo?.message}
-                                    />
-                                </FormControl>
-                            </Grid>
-                        </Grid>
 
-                        <FormControl fullWidth>
-                            <FormLabel sx={{ mb: 1, fontWeight: 500 }}>Additional Notes</FormLabel>
-                            <TextField
-                                multiline
-                                rows={3}
+                            <FormControl fullWidth>
+                                <FormLabel sx={{ mb: 1, fontWeight: 500 }}>Additional Notes</FormLabel>
+                                <TextField
+                                    multiline
+                                    rows={3}
+                                    fullWidth
+                                    placeholder="Any special requests or notes..."
+                                    {...register("notes")}
+                                    error={!!errors.notes}
+                                    helperText={errors.notes?.message}
+                                />
+                            </FormControl>
+
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                type="submit"
                                 fullWidth
-                                placeholder="Any special requests or notes..."
-                                {...register("notes")}
-                                error={!!errors.notes}
-                                helperText={errors.notes?.message}
-                            />
-                        </FormControl>
+                                sx={{
+                                    mt: 2,
+                                    py: 1.5,
+                                    fontWeight: 600,
+                                    backgroundColor: "#4e73df",
+                                    "&:hover": { backgroundColor: "#2d59c9" }
+                                }}
+                            >
+                                Book Appointment
+                            </Button>
+                        </Stack>
+                    </form>
+                </Paper>
+            </Box>
+        </>
 
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="large"
-                            type="submit"
-                            fullWidth
-                            sx={{
-                                mt: 2,
-                                py: 1.5,
-                                fontWeight: 600,
-                                backgroundColor: "#4e73df",
-                                "&:hover": { backgroundColor: "#2d59c9" }
-                            }}
-                        >
-                            Book Appointment
-                        </Button>
-                    </Stack>
-                </form>
-            </Paper>
-        </Box>
     );
 }
