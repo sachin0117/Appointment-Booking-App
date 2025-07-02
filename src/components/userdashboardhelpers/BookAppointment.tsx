@@ -1,10 +1,10 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Alert, Box, Button, FormControl, FormLabel, Grid, MenuItem, Paper, Select, Snackbar, Stack, TextField, Typography } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { v4 as uuidv4 } from 'uuid';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type BookAppointmentProps = {
     id: string;
@@ -69,6 +69,8 @@ const Service = (() => {
 export default function BookAppointment() {
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" as "success" | "error" });
     const navigate = useNavigate();
+    const location = useLocation()
+    const editingAppointment = location.state?.appointment;
     const {
         register,
         formState: { errors },
@@ -80,21 +82,41 @@ export default function BookAppointment() {
         resolver: yupResolver(schema),
     });
 
+    useEffect(() => {
+        if (editingAppointment) {
+            reset({
+                serviceType: editingAppointment.serviceType,
+                appointmentDate: editingAppointment.appointmentDate,
+                timeSlotFrom: editingAppointment.timeSlotFrom,
+                timeSlotTo: editingAppointment.timeSlotTo,
+                notes: editingAppointment.notes,
+                status: editingAppointment.status,
+            });
+        }
+    }, [editingAppointment, reset]);
+
     const onSubmit = (data: BookAppointmentFormFields) => {
         const CurrentUser = JSON.parse(localStorage.getItem("currentUser") || "{}")
-        const appointmentWithId: BookAppointmentProps & { fullname?: string; email?: string } = {
-            ...data, id: uuidv4(), fullname: CurrentUser.fullname,
-            email: CurrentUser.email,
-        };
         const existing = localStorage.getItem('AppointmentData');
         let appointments: BookAppointmentProps[] = [];
         if (existing) {
             const parsed = JSON.parse(existing);
             appointments = Array.isArray(parsed) ? parsed : [parsed];
         }
-        appointments.push(appointmentWithId);
+        if (editingAppointment) {
+            appointments = appointments.map(app => app.id === editingAppointment.id ? { ...app, ...data } : app);
+            setSnackbar({ open: true, message: "Appointment updated successfully!", severity: "success" });
+        } else {
+            const appointmentWithId: BookAppointmentProps & { fullname?: string; email?: string } = {
+                ...data,
+                id: uuidv4(),
+                fullname: CurrentUser.fullname,
+                email: CurrentUser.email,
+            };
+            appointments.push(appointmentWithId);
+            setSnackbar({ open: true, message: "Appointment booked successfully!", severity: "success" });
+        }
         localStorage.setItem('AppointmentData', JSON.stringify(appointments));
-        setSnackbar({ open: true, message: "Appoinment booked successfully!", severity: "success" });
         reset(defaultValues);
         setTimeout(() => {
             navigate("/dashboard");

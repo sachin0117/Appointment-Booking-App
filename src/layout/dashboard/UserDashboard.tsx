@@ -1,14 +1,16 @@
+import React, { useEffect } from "react";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Box, Card, CardContent, Grid, Divider, Chip, IconButton } from "@mui/material";
-import { Cancel as CancelIcon, Delete as DeleteIcon, Pending as PendingIcon, Check as CheckIcon, AccessTime as AccessTimeIcon, Event as EventIcon } from '@mui/icons-material';
+import { Cancel as CancelIcon, Edit as EditIcon, Delete as DeleteIcon, Pending as PendingIcon, Check as CheckIcon, AccessTime as AccessTimeIcon, Event as EventIcon } from '@mui/icons-material';
 import { formatDate, formatTime } from "../../helpers/Date&Time"
 import AppointmentAnalytics from "../../components/userdashboardhelpers/UserAppointmentAnalytics";
 import UserInfo from "../../components/userdashboardhelpers/UserInfo";
 import UserDasboardHeader from "../../components/userdashboardhelpers/UserDasboardHeader";
-import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 export default function UserDashboard() {
     const [appointments, setAppointments] = React.useState<any[]>([]);
-
+    const navigate = useNavigate()
     useEffect(() => {
         const appointmentData = localStorage.getItem("AppointmentData");
         const currentUser = localStorage.getItem("currentUser")
@@ -71,7 +73,7 @@ export default function UserDashboard() {
 
     return (
         <Box p={2}>
-            <UserDasboardHeader  />
+            <UserDasboardHeader />
             <Grid container spacing={3}>
                 <Grid>
                     <Card elevation={1} sx={{ borderRadius: 2 }}>
@@ -99,7 +101,7 @@ export default function UserDashboard() {
                                             <TableCell><strong>Service</strong></TableCell>
                                             <TableCell><strong>Notes</strong></TableCell>
                                             <TableCell align="center"><strong>Status</strong></TableCell>
-                                            <TableCell align="center"><strong>Delete</strong></TableCell>
+                                            <TableCell align="center"><strong>Edit/Delete</strong></TableCell>
                                         </TableRow>
                                     </TableHead>
 
@@ -143,11 +145,14 @@ export default function UserDashboard() {
                                                         <StatusChip status={appointment.status || "pending"} />
                                                     </TableCell>
                                                     <TableCell align="center">
+                                                        <IconButton onClick={() => navigate("/dashboard/book-appointment", { state: { appointment } })}>
+                                                            <EditIcon sx={{ color: "green" }} />
+                                                        </IconButton>
                                                         <IconButton onClick={() => handleDelete(appointment.id)}>
-                                                            <DeleteIcon sx={{ color: "red" }}  />
+                                                            <DeleteIcon sx={{ color: "red" }} />
                                                         </IconButton>
                                                     </TableCell>
-                                                </TableRow>
+                                                </TableRow> 
                                             ))
                                         ) : (
                                             <TableRow>
