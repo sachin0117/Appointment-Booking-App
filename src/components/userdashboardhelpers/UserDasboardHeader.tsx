@@ -5,9 +5,13 @@ import { BookAppointmentProps } from "./BookAppointment";
 
 export default function UserDasboardHeader() {
     const userData = localStorage.getItem("currentUser");
+    const currentUser = userData ? JSON.parse(userData) : null;
     const fullName = userData ? JSON.parse(userData)?.fullname : "User";
     const appointments = JSON.parse(localStorage.getItem("AppointmentData") || "[]");
-    const confirmedCount = appointments.filter((a:BookAppointmentProps) => (a.status || "").toLowerCase() === "confirmed").length;
+    const userAppointments = currentUser
+        ? appointments.filter((a: any) => a.email === currentUser.email)
+        : [];
+    const confirmedCount = userAppointments.filter((a: BookAppointmentProps) => (a.status || "").toLowerCase() === "confirmed").length;
     return (
         <Card elevation={2} sx={{
             mb: 4,

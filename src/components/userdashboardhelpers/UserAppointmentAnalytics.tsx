@@ -4,10 +4,15 @@ import { BookAppointmentProps } from "./BookAppointment";
 
 
 export default function AppointmentAnalytics() {
+    const userData = localStorage.getItem("currentUser");
+    const currentUser = userData ? JSON.parse(userData) : null;
     const appointments = JSON.parse(localStorage.getItem("AppointmentData") || "[]");
-    const confirmedCount = appointments.filter((a: BookAppointmentProps) => (a.status || "").toLowerCase() === "confirmed").length;
-    const PendingCount = appointments.filter((a: BookAppointmentProps) => (a.status || "").toLowerCase() === "pending").length;
-    const CancelledCount = appointments.filter((a: BookAppointmentProps) => (a.status || "").toLowerCase() === "cancelled").length;
+    const userAppointments = currentUser
+        ? appointments.filter((a: any) => a.email === currentUser.email)
+        : [];
+    const confirmedCount = userAppointments.filter((a: BookAppointmentProps) => (a.status || "").toLowerCase() === "confirmed").length;
+    const PendingCount = userAppointments.filter((a: BookAppointmentProps) => (a.status || "").toLowerCase() === "pending").length;
+    const CancelledCount = userAppointments.filter((a: BookAppointmentProps) => (a.status || "").toLowerCase() === "cancelled").length;
     return (
         <Grid >
             <Card elevation={1} sx={{ borderRadius: 2 }}>
@@ -74,7 +79,7 @@ export default function AppointmentAnalytics() {
                                 textAlign: 'center'
                             }}>
                                 <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                                    {appointments.length}
+                                    {userAppointments.length}
                                 </Typography>
                                 <Typography variant="body2">Total</Typography>
                             </Box>

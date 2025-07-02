@@ -223,7 +223,7 @@ export default function BookAppointment() {
                                 "&:hover": { backgroundColor: "#2d59c9" }
                             }}
                         >
-                            Confirm Appointment
+                            Book Appointment
                         </Button>
                     </Stack>
                 </form>

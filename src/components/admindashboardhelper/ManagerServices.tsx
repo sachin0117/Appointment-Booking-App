@@ -8,6 +8,7 @@ type ManagerServicesProps = {
     id: string;
     addService: string;
     description: string;
+    adminEmail?: string;
 };
 
 type ManageServicesFields = Omit<ManagerServicesProps, "id">;
@@ -18,8 +19,17 @@ const schema = Yup.object({
 });
 
 export default function ManagerServices() {
-    const [services, setServices] = useState<ManagerServicesProps[]>([]);
+    const userData = localStorage.getItem("currentUser");
+    const currentUser = userData ? JSON.parse(userData) : null;
+    const [services, setServices] = useState<ManagerServicesProps[]>(() => {
+        const stored = localStorage.getItem("services");
+        const allServices = stored ? JSON.parse(stored) : [];
+        return currentUser
+            ? allServices.filter((s: ManagerServicesProps) => s.adminEmail === currentUser.email)
+            : [];
+    });
 
+    
     const {
         register,
         formState: { errors },
@@ -34,9 +44,13 @@ export default function ManagerServices() {
     });
 
     const onSubmit = (data: ManageServicesFields) => {
-        const newService = { ...data, id: Date.now().toString() };
-        setServices([...services, newService]);
-        localStorage.setItem("services", JSON.stringify([...services, newService]));
+        const newService = { ...data, id: Date.now().toString(), adminEmail: currentUser.email };
+        const updatedServices = [...services, newService];
+        setServices(updatedServices);
+        const stored = localStorage.getItem("services");
+        const allServices = stored ? JSON.parse(stored) : [];
+        const allUpdated = [...allServices, newService];
+        localStorage.setItem("services", JSON.stringify(allUpdated));
         reset();
     };
 
